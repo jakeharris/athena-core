@@ -5,3 +5,6 @@ athena-test
 
 # API tokens
 tokens
+
+# Node modules
+node_modules
