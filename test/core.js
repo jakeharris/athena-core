@@ -1,6 +1,7 @@
 var assert = require('assert'),
+    sinon  = require('sinon'),
 
-    Core = require('../src/core')
+    Core   = require('../src/core')
 
 describe('Core', () => {
     context('onRequest', () => {
@@ -44,7 +45,7 @@ describe('Core', () => {
             Core.getValidImageURL.restore()
         })
         // requires some database configuration
-        it('returns a different sorry, sorry message if there is no new matching content to show')
+        it('returns a sorry, sorry message if there is no new matching content to show')
 
         // requires some database asking
         it('saves this view to the database')
