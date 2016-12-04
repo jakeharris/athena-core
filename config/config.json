@@ -1,0 +1,17 @@
+{
+  "development": {
+    "database": "database_development",
+    "dialect": "sqlite",
+    "storage": "athena-dev"
+  },
+  "test": {
+    "database": "database_test",
+    "dialect": "sqlite",
+    "storage": "athena-test"
+  },
+  "production": {
+    "database": "database_production",
+    "dialect": "sqlite",
+    "storage": "athena"
+  }
+}
