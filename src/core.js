@@ -8,28 +8,30 @@ class Core {
         if(typeof payload.id === 'undefined') throw new TypeError('The payload must contain a user id snowflake. (Received: ' + payload + '.)')
         if(typeof payload.id !== 'number') throw new TypeError('The payload\'s user id snowflake property must be a number. (Received: ' + typeof payload.id + '.)')
 
-        try {
-            getValidImageURL(payload.tags, payload.id).then((url) => {
+        return this.getValidImageURL(payload.tags, payload.id).then(
+            (url) => {
                 let u = url
-                try {
-                    save().then(() => {
+                save().then(
+                    () => {
                         return u
-                    })
-                }
-                catch (e) {
-                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu know.'
-                }
-            })
-        }
-        catch (e) {
-            return 'Sorry, sorry, I\'m sorry...It seems there\'s nothing new to show. I\'ll get on that.'
-        }
+                    }, 
+                    (err) => {
+                        return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu know.\nError:\n' + err
+                    }
+                )
+            }, 
+            (err) => {
+                return 'Sorry, sorry, I\'m sorry...It seems there\'s nothing new to show. I\'ll get on that.\nError:\n' + e
+            }
+        )
 
     }  
     static getValidImageURL (tags, id) {
-        
+        return Promise.resolve('')
     }
     static save () {
-
+        return Promise.resolve('')
     }
 }
+
+module.exports = Core
