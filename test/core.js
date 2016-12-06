@@ -1,7 +1,9 @@
-var assert = require('assert'),
-    sinon  = require('sinon'),
+const assert = require('assert'),
+      sinon  = require('sinon'),
 
-    Core   = require('../src/core')
+      ParameterCountError = require('../src/errors').ParameterCountError,
+
+      Core   = require('../src/core')
 
 describe('Core', () => {
     context('onRequest', () => {
