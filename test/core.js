@@ -55,8 +55,8 @@ describe('Core', () => {
         it('returns a different sorry, sorry message if there was a database issue')
 
         it('returns a Promise of a URL to an image that the user has never seen before, matching the requested tags', (done) => {
-            var p = Core.onRequest({ 'tags': ['mei', 'zarya', 'polar bear'], 'id': 8675309999 }).then(() => {
-                assert.notEqual(p.indexOf('http'), -1)
+            let p = Core.onRequest({ 'tags': ['mei', 'zarya', 'polar bear'], 'id': 8675309999 }).then((url) => {
+                assert.notEqual(url.indexOf('http'), -1)
                 done()
             })
             assert(p instanceof Promise)
