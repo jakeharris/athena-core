@@ -11,26 +11,30 @@ class Core {
         return this.getValidImageURL(payload.tags, payload.id).then(
             (url) => {
                 let u = url
-                save().then(
+                return this.save().then(
                     () => {
                         return u
-                    }, 
+                    }
+                ).catch(
                     (err) => {
                         return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu know.\nError:\n' + err
                     }
                 )
-            }, 
+            }
+        ).catch(
             (err) => {
-                return 'Sorry, sorry, I\'m sorry...It seems there\'s nothing new to show. I\'ll get on that.\nError:\n' + e
+                return 'Sorry, sorry, I\'m sorry...It seems there\'s nothing new to show. I\'ll get on that.\nError:\n' + err
             }
         )
 
     }  
     static getValidImageURL (tags, id) {
-        return Promise.resolve('')
+        return new Promise((resolve, reject) => { 
+            resolve(true)
+        })
     }
     static save () {
-        return Promise.resolve('')
+        return new Promise((resolve, reject) => { resolve(true) })
     }
 }
 
