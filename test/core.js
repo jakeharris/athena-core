@@ -68,8 +68,18 @@ describe('Core', () => {
             assert.throws(() => {
                 Core.getValidImageURL()
             }, ParameterCountError)
+        })
+        it('throws a TypeError if we receive a tags parameter that isn\'t an array', () => {
             assert.throws(() => {
-                Core.getValidImageURL(id = 8675309999)
+                Core.getValidImageURL('tags', 8675309999)
+            }, TypeError)
+        })
+        it('throws a ParameterCountError if we receive an empty array', () => {
+            assert.throws(() => {
+                Core.getValidImageURL([])
+            }, ParameterCountError)
+            assert.throws(() => {
+                Core.getValidImageURL([], 8675309999)
             }, ParameterCountError)
         })
         it('throws a ParameterCountError if we don\'t receive a user id snowflake', () => {
@@ -77,8 +87,19 @@ describe('Core', () => {
                 Core.getValidImageURL(['mei', 'zarya', 'polar bear'])
             }, ParameterCountError)
         })
-
-        it('throws a NoContentError if no valid URL can be found')
+        it('throws a TypeError if the user id snowflake is not a number', () => {
+            assert.throws(() => {
+                Core.getValidImageURL(['mei', 'zarya', 'polar bear'], '3af')
+            })
+            assert.throws(() => {
+                Core.getValidImageURL(['mei', 'zarya', 'polar bear'], [])
+            })
+        })
+        it('throws a TypeError if the user id snowflake is non-positive', () => {
+            assert.throws(() => {
+                Core.getValidImageURL(['mei', 'zarya', 'polar bear'], -193)
+            })
+        })
 
         it('returns a Promise of a URL to an image that the user has never seen before, matching the requested tags', (done) => {
             var p = Core.getValidImageURL(['mei', 'zarya', 'polar bear'], 8675309999).then(() => {
