@@ -5,6 +5,8 @@ const assert = require('assert'),
 
       Core   = require('../src/core')
 
+var models = require('../models')
+
 describe('Core', () => {
     context('onRequest', () => {
         it('throws a ParameterCountError if we don\'t receive a payload', () => {
