@@ -66,7 +66,7 @@ class Core {
                     group: ['Post.id'], 
                     having: ['COUNT(?) >= ?', 'Tag.name', tags.length] 
                 })
-                .then((posts) => { resolve(posts[0].dataValues.url) })
+                .then((posts) => { resolve(posts[0].dataValues) })
                 .catch(reject)
         })
     }
