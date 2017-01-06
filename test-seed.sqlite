@@ -1,0 +1,17 @@
+INSERT INTO Posts (id, url) values (1, "https://tumblr.com/");
+INSERT INTO Posts (id, url) values (2, "https://google.com/");
+INSERT INTO Posts (id, url) values (3, "https://github.com/");
+
+INSERT INTO Tags  (id, name) values (1, "mercy");
+INSERT INTO Tags  (id, name) values (2, "pharah");
+INSERT INTO Tags  (id, name) values (3, "mei");
+
+INSERT INTO PostTag  (id, PostId, TagId) values (1, 1, 1);
+INSERT INTO PostTag  (id, PostId, TagId) values (2, 1, 2);
+INSERT INTO PostTag  (id, PostId, TagId) values (3, 1, 3);
+INSERT INTO PostTag  (id, PostId, TagId) values (4, 2, 1);
+INSERT INTO PostTag  (id, PostId, TagId) values (5, 3, 2);
+INSERT INTO PostTag  (id, PostId, TagId) values (6, 3, 3);
+
+INSERT INTO Views (id, UserId, PostId) values (1, 1, 3);
+
