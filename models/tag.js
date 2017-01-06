@@ -3,10 +3,11 @@ module.exports = function(sequelize, DataTypes) {
   var Tag = sequelize.define('Tag', {
     name: DataTypes.TEXT
   }, {
+    timestamps: false,
     classMethods: {
       associate: function(models) {
         // associations can be defined here
-        Tag.belongsTo(models.Post)
+        Tag.belongsToMany(models.Post, {through: 'PostTag', timestamps: false})
       }
     }
   });
