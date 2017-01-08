@@ -23,17 +23,17 @@ class Core {
                     let url = post.url // actually, do I need this? can I just return url?
                     return this.save(payload.id, post.id).then(
                         () => {
-                            return u
+                            return url
                         }
                     ).catch(
                         (err) => {
-                            return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu#5270 know.\nError:\n' + err
+                            throw err 
                         }
                     )
                 }
             ).catch(
                 (err) => {
-                    return 'Sorry, sorry, I\'m sorry...It seems there\'s nothing new to show. I\'ll get on that.\nError:\n' + err
+                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu#5270 know.\nError:\n' + err + '\n'
                 }
             )
 
@@ -66,59 +66,105 @@ class Core {
                     group: ['Post.id'], 
                     having: ['COUNT(?) >= ?', 'Tag.name', tags.length] 
                 })
-                .then((posts) => { resolve(posts[0].dataValues) })
+                .then((posts) => { 
+                    if(typeof (posts[0].dataValues) === 'undefined' )
+                        reject(posts[0])
+                    resolve(posts[0].dataValues)
+                })
                 .catch(reject)
         })
     }
     static save (id, post) {
-        return models.sequelize.transaction((t) => {
-            return models.View.create(
+        
+        return Models.sequelize.transaction((t) => {
+            return Models.View.create(
                 {
                     UserId: id,
-                    post: post
-                }, 
-                { 
-                    include: [ { association: models.View.Post } ], 
-                    transaction: t 
+                    PostId: post.id
                 }
             )
         })
     }
     static fetchFromTumblr() {
+        
         let tm = new TokenManager('./tokens')
         tm.parseTokens().then(() => {
-            let client = Tumblr.createClient({
+            let tumblr = Tumblr.createClient({
                 consumer_key: tm.tokens['tumblr'],
                 returnPromises: true
             })
 
-            let posts = client.taggedPosts('overwatch').then((posts) => {
-                posts.filter((e, i) => {
-                    return e.type === 'photo'
-                })
-                
-                for(let p in posts)
-                    posts[p] = { id: posts[p].id, url: posts[p].post_url, tags: posts[p].tags }
-
-                console.log(posts)
-                return posts
-            }).then((posts) => {
-                for(let post of posts) 
-                    Models.Post.create(post,
-                        { 
-                            include: [{
-                                association: Models.Post.Tag
-                            }]
-                        }
-                    ).then(() => {
-                        Models.Post.sync()
+            let posts = [],
+                tags = []
+            
+            tumblr.taggedPosts('overwatch')
+                .then((postsFromTumblr) => {
+                    // filter out all non-image posts
+                    posts = postsFromTumblr.filter((e, i) => {
+                        return e.type === 'photo'
                     })
-             })
 
-        }, (err) => {
+                    // create tags as tag objects that
+                    // the Tag model can pass to the DB,
+                    // and group them into an array for
+                    // bulkCreate()
+                    for(let p in posts) {
 
+                        let post = posts[p]
+                        posts[p] = { id: post.id, url: post.post_url, tags: post.tags }
+
+                        for(let t in post.tags) {
+                            let tag = post.tags[t]
+                            tag = { name: tag.toLowerCase() } 
+                            posts[p].tags[t] = tag
+                            tags.push(tag)
+                        }
+                    }
+
+                    return Models.Tag.bulkCreate(tags, { fields: ['name'], ignoreDuplicates: true })
+                        .then((tagModels) => {
+
+                            for (let post of posts)
+                                Models.Post.create(post)
+                                    .then((postModel) => {
+
+                                        let tagNames = []
+                                        for(let tag of post.tags) {
+                                            tagNames.push(tag.name)
+                                        }
+
+                                        Models.Tag.findAll({ 
+                                            where: {
+                                                name: {
+                                                    in: tagNames
+                                                }
+                                            }
+                                        }).then((tagModels) => {
+                                            postModel.setTags(tagModels, {
+                                                include: [ {
+                                                    model: Models.Tag
+                                                } ]
+                                            }).catch((err) => { console.log ('Setting the tags didn\'t work, somehow...'); console.log(err) })
+                                        })
+                                    })
+                                    .catch((err) => { throw err })
+                        }, (err) => { 
+                            console.log('Bulk tag creation failed.')
+                            console.log(err) 
+                        }).catch((err) => { 
+                            throw err
+                        })
+
+
+                }, (err) => { throw err })
+
+            return posts
+
+        }).catch((err) => {
+            console.error('Something went wrong fetching from Tumblr. Stack trace: ')
+            console.error(err)
         })
     }
 }
 
-module.exports = Core
+module.exports = { Core, Models }
