@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
-        Tag.belongsToMany(models.Post, {through: 'PostTag', timestamps: false})
+        Tag.belongsToMany(models.Post, {through: models.PostTag, timestamps: false})
       }
     }
   });
