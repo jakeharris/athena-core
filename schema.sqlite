@@ -2,20 +2,21 @@
 .mode columns
 
 CREATE TABLE Posts (
-id int primary key,
+id integer primary key,
 url varchar);
 CREATE TABLE Tags (
-id int primary key,
-name varchar);
-CREATE TABLE PostTag (
-id int primary key,
+id integer primary key,
+name varchar,
+unique(name));
+CREATE TABLE PostTags (
+id integer primary key,
 PostId int,
 TagId int,
 foreign key (PostId) references Posts (id),
 foreign key (TagId)  references Tags  (id)
 );
 CREATE TABLE Views (
-  id int primary key,
+  id integer primary key,
   UserId bigint,
   PostId int,
   foreign key (PostId) references Posts(id),
