@@ -1,7 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var View = sequelize.define('View', {
-    userID: DataTypes.BIGINT.UNSIGNED
+    UserId: DataTypes.BIGINT.UNSIGNED
   }, {
     timestamps: false,
     classMethods: {
