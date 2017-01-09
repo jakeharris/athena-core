@@ -50,22 +50,10 @@ class Core {
             // ask database for post that matches all tags
             // that no user with ID id has seen
             
-            Models.Post.findAll(
-                { 
-                    include: [
-                        { 
-                            model: Models.Tag, 
-                            attributes: ['name'], 
-                            where: { 
-                                name: { 
-                                    $in: tags
-                                } 
-                            } 
-                        }
-                    ], 
-                    group: ['Post.id'], 
-                    having: ['COUNT(?) >= ?', 'Tag.name', tags.length] 
-                })
+            Models.sequelize.query(
+                'SELECT Post.* FROM (SELECT Posts.* FROM Posts, Tags, PostTags WHERE Posts.id = PostTags.PostId AND Tags.id = PostTags.TagId AND Tags.name IN ("' + tags.join('","') + '") GROUP BY Posts.id HAVING COUNT(*) >= ' + tags.length + ') as Post, Views WHERE (Views.PostId = Post.id AND Views.UserId != ' + id + ') OR NOT EXISTS (SELECT id FROM Views WHERE Post.id = Views.id)',
+                { model: Models.Post }
+            )
                 .then((posts) => { 
                     if(typeof (posts[0].dataValues) === 'undefined' )
                         reject(posts[0])
@@ -75,14 +63,16 @@ class Core {
         })
     }
     static save (id, post) {
-        
-        return Models.sequelize.transaction((t) => {
-            return Models.View.create(
-                {
-                    UserId: id,
-                    PostId: post.id
-                }
-            )
+
+        console.log('%%%%% ATTEMPTING TO SAVE A VIEW %%%%%')
+        console.log(id)
+        console.log(post)
+
+        return Models.View.create({
+            UserId: id,
+            PostId: post
+        }, {
+            include: [ Models.Post ]
         })
     }
     static fetchFromTumblr() {
@@ -144,10 +134,15 @@ class Core {
                                                 include: [ {
                                                     model: Models.Tag
                                                 } ]
-                                            }).catch((err) => { console.log ('Setting the tags didn\'t work, somehow...'); console.log(err) })
+                                            }, (err) => {
+                                                console.log ('Setting the tags didn\'t work, somehow...') 
+                                                console.log(err)
+                                            }).catch((err) => { 
+                                                console.log('There was an error finding matching tags.') 
+                                                console.log(err)
+                                            })
                                         })
-                                    })
-                                    .catch((err) => { throw err })
+                                    }).catch((err) => { /* do nothing -- this means it was a duplicate post, which is fine */ })
                         }, (err) => { 
                             console.log('Bulk tag creation failed.')
                             console.log(err) 
