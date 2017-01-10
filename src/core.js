@@ -33,7 +33,10 @@ class Core {
                 }
             ).catch(
                 (err) => {
-                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu#5270 know.\nError:\n' + err + '\n'
+                    if(err instanceof TypeError && err.message === 'Cannot read property \'dataValues\' of undefined') {
+                        return 'What you seek cannot be found. Perhaps that skull girl would know...?\n[Try again in a bit; we don\'t have any with that set of tags yet that you haven\'t seen.]'
+                    }
+                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu#5270 know.\n' + err + '\n'
                 }
             )
 
