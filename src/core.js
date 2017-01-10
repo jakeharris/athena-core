@@ -53,7 +53,7 @@ class Core {
             Models.sequelize.query(
                 'SELECT Post.* '
                     + 'FROM ( '
-                        + 'SELECT Posts.* AND Posts, Tags, PostTags '
+                        + 'SELECT Posts.* FROM Posts, Tags, PostTags '
                         + 'WHERE Posts.id = PostTags.PostId '
                             + 'AND PostTags.TagId = Tags.id '
                             + 'AND Tags.name in (' + tags.join('","') + ') '
