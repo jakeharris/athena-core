@@ -51,10 +51,22 @@ class Core {
             // that no user with ID id has seen
             
             Models.sequelize.query(
-                'SELECT Post.* FROM (SELECT Posts.* FROM Posts, Tags, PostTags WHERE Posts.id = PostTags.PostId AND Tags.id = PostTags.TagId AND Tags.name IN ("' + tags.join('","') + '") GROUP BY Posts.id HAVING COUNT(*) >= ' + tags.length + ') as Post, Views WHERE (Views.PostId = Post.id AND Views.UserId != ' + id + ') OR NOT EXISTS (SELECT id FROM Views WHERE Post.id = Views.id)',
+                'SELECT P.* '
+                    + 'FROM Posts AS P,Tags,PostTags,Views '
+                    + 'WHERE P.id = PostTags.PostId '
+                    + 'AND PostTags.TagId = Tags.id '
+                    + 'AND Tags.name in ("' + tags.join('","') + '") '
+                    + 'AND '
+                        + '(' 
+                            + '(Views.PostId = P.id AND Views.UserId != ' + id + ') '
+                            + 'OR NOT EXISTS (SELECT * FROM Posts,Views WHERE P.id = Views.PostId)'
+                        + ')'
+                    + 'GROUP BY P.id HAVING COUNT(*) >= ' + tags.length + ';',
                 { model: Models.Post }
             )
                 .then((posts) => { 
+                    console.log('%%%%% PRIMARY QUERY RESULTS %%%%%')
+                    console.log(posts)
                     if(typeof (posts[0].dataValues) === 'undefined' )
                         reject(posts[0])
                     resolve(posts[0].dataValues)
