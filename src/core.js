@@ -56,7 +56,7 @@ class Core {
                         + 'SELECT Posts.* FROM Posts, Tags, PostTags '
                         + 'WHERE Posts.id = PostTags.PostId '
                             + 'AND PostTags.TagId = Tags.id '
-                            + 'AND Tags.name in (' + tags.join('","') + ') '
+                            + 'AND Tags.name in ("' + tags.join('","') + '") '
                         + 'GROUP BY Posts.id '
                         + 'HAVING COUNT(Tags.name) >= ' + tags.length
                     + ') as Post, Views '
