@@ -77,7 +77,7 @@ class Core {
                         + 'WHERE Views.UserId = ' + id
                     + ') AS UserViews '
                     + 'ON Post.id = UserViews.PostId '
-                    + 'WHERE UserViews.PostId IS NOT NULL',
+                    + 'WHERE UserViews.PostId IS NULL',
                 { model: Models.Post }
             )
                 .then((posts) => { 
