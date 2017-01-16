@@ -25,6 +25,6 @@ server.post('/post', (request, response) => {
 Models.sequelize.sync().then(() => {
     console.log('listening on port 3000...')
     server.listen(3000)
-    setInterval(Core.fetchFromTumblr, 1000 * 60 * 10) // every 10 min, grab some more
+    setInterval(Core.fetchFromTumblr, 1000 * 60 * 1) // every 10 min, grab some more
 })
 
