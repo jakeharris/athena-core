@@ -1,0 +1,13 @@
+SELECT Post.* 
+  FROM ( 
+    SELECT Posts.* FROM Posts, Tags, PostTags 
+    WHERE Posts.id = PostTags.PostId
+      AND PostTags.TagId = Tags.id 
+      AND Tags.name in ("mei") 
+    GROUP BY Posts.id 
+    HAVING COUNT(Tags.name) >= 1) as Post, Views 
+WHERE (
+    (Views.PostId = Post.id AND Views.UserId != 146688405936406530) 
+    OR NOT EXISTS (SELECT * FROM Posts,Views WHERE Post.id = Views.PostId)
+)
+GROUP BY Post.id, Post.url'
