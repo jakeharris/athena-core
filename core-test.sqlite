@@ -10,4 +10,4 @@ WHERE (
     (Views.PostId = Post.id AND Views.UserId != 146688405936406530) 
     OR NOT EXISTS (SELECT * FROM Posts,Views WHERE Post.id = Views.PostId)
 )
-GROUP BY Post.id, Post.url'
+GROUP BY Post.id, Post.url;
