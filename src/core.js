@@ -34,9 +34,16 @@ class Core {
             ).catch(
                 (err) => {
                     if(err instanceof TypeError && err.message === 'Cannot read property \'dataValues\' of undefined') {
-                        return 'What you seek cannot be found. Perhaps that skull girl would know...?\n\n_Try again in a bit; we don\'t have any with that set of tags yet that you haven\'t seen._'
+                        return 'What you seek cannot be found. Perhaps that skull girl would know...?\n\n_Try again in a bit; I don\'t have any with that set of tags yet that you haven\'t seen._'
                     }
-                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let @milieu#5270 know.\n' + err + '\n'
+                    if(err instanceof SequelizeUniqueConstraintError) {
+                        return 'If at first you don\'t succeed, please don\'t blow it up again! This hurts. :(\n\n' 
+                            + '_I was gonna show you something you had seen before, but I know better, so I blew up. 💣_\n\n'
+                            + '*UserId:* ' + payload.id + '\n'
+                            + '*Tags:* [' + payload.tags.join(', ') + ']\n\n'
+                            + '_If this is still happening, let <@milieu#5270> know._'
+                    }
+                    return 'Sorry, sorry, I\'m sorry...I\'ve failed. Someone should probably let <@milieu#5270> know.\n' + err + '\n'
                 }
             )
 
@@ -111,15 +118,16 @@ class Core {
                         return e.type === 'photo'
                     })
 
-                    // create tags as tag objects that
-                    // the Tag model can pass to the DB,
-                    // and group them into an array for
-                    // bulkCreate()
                     for(let p in posts) {
 
+                        // trim off all the stuff we're not using
                         let post = posts[p]
                         posts[p] = { id: post.id, url: post.post_url, tags: post.tags }
 
+                        // create tags as tag objects that
+                        // the Tag model can pass to the DB,
+                        // and group them into an array for
+                        // bulkCreate()
                         for(let t in post.tags) {
                             let tag = post.tags[t]
                             tag = { name: tag.toLowerCase() } 
