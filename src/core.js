@@ -70,12 +70,14 @@ class Core {
                             + 'AND Tags.name in ("' + tags.join('","') + '") '
                         + 'GROUP BY Posts.id '
                         + 'HAVING COUNT(Tags.name) >= ' + tags.length
-                    + ') as Post, Views '
-                    + 'WHERE (' 
-                        + '(Views.PostId = Post.id AND Views.UserId != ' + id + ') '
-                        + 'OR NOT EXISTS (SELECT * FROM Posts,Views WHERE Post.id = Views.PostId)'
-                    + ') '
-                    + 'GROUP BY Post.id, Post.url',
+                    + ') AS Post LEFT JOIN '
+                    + '('
+                        + 'SELECT * '
+                        + 'FROM Views '
+                        + 'WHERE Views.UserId = ' + id +  
+                    + ') AS UserViews '
+                    + 'ON Post.id = UserViews.PostId '
+                    + 'WHERE UserViews.PostId IS NOT NULL',
                 { model: Models.Post }
             )
                 .then((posts) => { 
