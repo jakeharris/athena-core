@@ -4,7 +4,8 @@ const ParameterCountError = require('./errors').ParameterCountError,
       Tumblr = require ('tumblr.js'),
       TokenManager = require('./token-manager')
 
-var Models = require('../models')
+var Models = require('../models'),
+    Sequelize = require('sequelize')
 
 class Core {
     static onRequest (payload) {
@@ -36,7 +37,7 @@ class Core {
                     if(err instanceof TypeError && err.message === 'Cannot read property \'dataValues\' of undefined') {
                         return 'What you seek cannot be found. Perhaps that skull girl would know...?\n\n_Try again in a bit; I don\'t have any with that set of tags yet that you haven\'t seen._'
                     }
-                    if(err instanceof Models.sequelize.SequelizeUniqueConstraintError) {
+                    if(err instanceof Sequelize.SequelizeUniqueConstraintError) {
                         return 'If at first you don\'t succeed, please don\'t blow it up again! This hurts. :(\n\n' 
                             + '_I was gonna show you something you had seen before, but I know better, so I blew up. 💣_\n\n'
                             + '*UserId:* ' + payload.id + '\n'
