@@ -74,7 +74,7 @@ class Core {
                     + '('
                         + 'SELECT * '
                         + 'FROM Views '
-                        + 'WHERE Views.UserId = ' + id +  
+                        + 'WHERE Views.UserId = ' + id
                     + ') AS UserViews '
                     + 'ON Post.id = UserViews.PostId '
                     + 'WHERE UserViews.PostId IS NOT NULL',
